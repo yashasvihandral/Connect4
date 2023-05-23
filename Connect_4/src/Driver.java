@@ -24,6 +24,10 @@ import java.awt.geom.AffineTransform;
 
 public class Driver extends JPanel implements ActionListener, KeyListener {
 
+	
+	String lost1 = "U LOSE";
+	String win1 = "U WON";
+	
 	int screen_width = 900;
 	int screen_height = 935;
 	
@@ -421,10 +425,51 @@ public class Driver extends JPanel implements ActionListener, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
+		// detect up, down, left, right arrow keypresses
+				// call setters for volovety attributes accordingly
+				// 37 <- ,
+				// 38 up ,
+				// 40 down,
+				// 39 ->
+				
+				hop.play();
+				
+				if (e.getKeyCode() == 87) { //up
+					froggy.setVy(-10);
+					froggy.setVx(0);
+				}
 
-		
+				if (e.getKeyCode() == 83) { //down
+					froggy.setVy(10);
+					froggy.setVx(0);
+				}
+				if (e.getKeyCode() == 65) { //left
+					froggy.setVy(0);
+					froggy.setVx(-10);
+				}
+				if (e.getKeyCode() == 68) { //right
+					froggy.setVy(0);
+					froggy.setVx(10);
+				}
+				
 
-
+				switch(e.getKeyCode()) {
+				
+				case KeyEvent.VK_W:		//up
+					break;
+				
+				case KeyEvent.VK_S:   //down		
+					break;
+				
+				case KeyEvent.VK_A:   //left
+					break;
+					
+				case KeyEvent.VK_D:    //right
+					break;
+					
+					// handle going left and right
+				// A and D keys
+					
 		
 
 
@@ -432,6 +477,9 @@ public class Driver extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+
+		froggy.setVy(0);
+		froggy.setVx(0);
 
 	}
 
