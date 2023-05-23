@@ -52,9 +52,7 @@ public class Yellow {
 
 	
 
-	public void setHeight(int height) {
-		
-	}
+	
 
 	public void move() {
 		
