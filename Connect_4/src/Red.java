@@ -26,8 +26,8 @@ public class Red {
 		y = startY;
 		width = 50;
 		height = 50;
-		vx = -1;
-		vy = 0;
+		//vx = -1;
+		//vy = 0;
 
 		img = getImage(fileName);
 		init(x, y);
@@ -37,11 +37,11 @@ public class Red {
 	public Red(String fileName) {
 		// assignment statements for attributes
 
-		x = 0;
-		y = 0;
-		vx = 0;
-		width = 50;
-		height = 50;
+		x = 100;
+		y = 100;
+		//vx = 0;
+		width = 20;
+		height = 0;
 
 		img = getImage(fileName);
 		init(x, y);
@@ -74,7 +74,7 @@ public class Red {
 		Image tempImage = null;
 		try {
 			URL imageURL = Red.class.getResource(path);
-			tempImage = Toolkit.getDefaultToolkit().getImage(imageURL);
+			tempImage = Toolkit.getDefaultToolkit().getImage("Cat Coin Red.JPG");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

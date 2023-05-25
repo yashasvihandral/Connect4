@@ -76,7 +76,7 @@ public class Yellow {
 		Image tempImage = null;
 		try {
 			URL imageURL = Yellow.class.getResource(path);
-			tempImage = Toolkit.getDefaultToolkit().getImage(imageURL);
+			tempImage = Toolkit.getDefaultToolkit().getImage("Yellow.JPG");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

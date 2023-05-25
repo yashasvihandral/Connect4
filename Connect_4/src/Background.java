@@ -42,14 +42,14 @@ public class Background {
 
 	private void init(double a, double b) {
 		tx.setToTranslation(a, b);
-		tx.scale(1.28, 1.28);
+		tx.scale(0.43, 0.43);
 	}
 
 	private Image getImage(String path) {
 		Image tempImage = null;
 		try {
 			URL imageURL =  Background.class.getResource(path);
-			tempImage = Toolkit.getDefaultToolkit().getImage(imageURL);
+			tempImage = Toolkit.getDefaultToolkit().getImage("Background.JPG");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
