@@ -34,48 +34,8 @@ public class Driver extends JPanel implements ActionListener, KeyListener {
 	Music hop = new Music("src//hop//cat.mp3",false); 
 
 	// instantiate object log
-	Yellow[] yellow1 = new Yellow[10];
-	Yellow[] yellow2 = new Yellow[10];
-	Yellow[] yellow3 = new Yellow[10];
-	Yellow[] yellow4 = new Yellow[10];
-	Yellow[] yellow5 = new Yellow[10];
-	Yellow[] yellow6 = new Yellow[10];
-	Yellow[] yellow7 = new Yellow[10];
-	Yellow[] yellow8 = new Yellow[10];
-	Yellow[] yellow9 = new Yellow[10];
-	Yellow[] yellow10 = new Yellow[10];
-	Yellow[] yellow11 = new Yellow[10];
-	Yellow[] yellow12 = new Yellow[10];
-	Yellow[] yellow13 = new Yellow[10];
-	Yellow[] yellow14 = new Yellow[10];
-	Yellow[] yellow15 = new Yellow[10];
-	Yellow[] yellow16 = new Yellow[10]; 
-	Yellow[] yellow17 = new Yellow[10];
-	Yellow[] yellow18 = new Yellow[10];
-	Yellow[] yellow19 = new Yellow[10];
-	Yellow[] yellow20 = new Yellow[10];
-	Yellow[] yellow21 = new Yellow[10];
-	Red[] red1 = new Red[10];
-	Red[] red2 = new Red[10];
-	Red[] red3 = new Red[10];
-	Red[] red4 = new Red[10];
-	Red[] red5 = new Red[10];
-	Red[] red6 = new Red[10];
-	Red[] red7 = new Red[10];
-	Red[] red8 = new Red[10];
-	Red[] red9 = new Red[10];
-	Red[] red10 = new Red[10];
-	Red[] red11 = new Red[10];
-	Red[] red12 = new Red[10];
-	Red[] red13 = new Red[10];
-	Red[] red14 = new Red[10];
-	Red[] red15 = new Red[10];
-	Red[] red16 = new Red[10];
-	Red[] red17 = new Red[10];
-	Red[] red18 = new Red[10];
-	Red[] red19 = new Red[10];
-	Red[] red20 = new Red[10];
-	Red[] red21 = new Red[10];
+	int[][] yellow = new int[6][7];
+
 	
 	Background bg;
 	int my_variable = 3; // example
@@ -355,53 +315,12 @@ public class Driver extends JPanel implements ActionListener, KeyListener {
 		f.addKeyListener(this); 
 
 
-		for (int i = 0; i < red1.length; i++) {
-
-			red1[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red2[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red3[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red4[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red5[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red6[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red7[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red8[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red9[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red10[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red11[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red12[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red13[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red14[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red15[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red16[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red17[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red18[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red19[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red20[i] = new Red("red.JPG", i * 250 + 400, 200);
-			red21[i] = new Red("red.JPG", i * 250 + 400, 200);
+		for (int r = 0; r < yellow.length; r++) {	
+			for (int c = 0; c < yellow[0].length; c++) {
+				
+				
+			}
 			
-			yellow1[i] = new Yellow("Yellow.JPG", i * 350 + 300, 260);
-			yellow2[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow3[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow4[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow5[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow6[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow7[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow8[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow9[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow10[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow11[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow12[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow13[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow14[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			
-			yellow15[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow16[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow17[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow18[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow19[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow20[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-			yellow21[i] = new Yellow("Yellow.JPG", i * 250 + 400, 200);
-		
 		}
 		
 		
