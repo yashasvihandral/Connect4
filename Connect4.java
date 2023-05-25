@@ -19,6 +19,7 @@ public class Connect4 {
 		boolean winner = false;		
 		
 		//play a turn
+		
 		while (winner == false && turn <= 42){
 			boolean validPlay;
 			int play;
