@@ -6,6 +6,7 @@ public class Connect4 {
 		Scanner in = new Scanner(System.in);
 		
 		char[][] grid = new char[6][7];
+		Music hop = new Music("src//hop//cat.mp3",false); 
 		
 		//initialize array
 		for (int row = 0; row < grid.length; row++){
