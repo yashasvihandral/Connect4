@@ -1,161 +1,296 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Arrays;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
-public class Connect4Game extends JFrame {
+public class Connect4Game {
+    private JFrame frame;
 
-    private final int ROWS = 6;
-    private final int COLS = 7;
-    private final int CELL_SIZE = 100;
-    private final int BOARD_WIDTH = COLS * CELL_SIZE;
-    private final int BOARD_HEIGHT = ROWS * CELL_SIZE;
-
-    private final ImageIcon coinImage1; // Image for Player 1's coin
-    private final ImageIcon coinImage2; // Image for Player 2's coin
-    private final ImageIcon backgroundImage; // Image for the background grid
-
-    private int currentPlayer; // 1 or 2 to indicate current player
-    private int[][] board; // 0 for empty cell, 1 for player 1's coin, 2 for player 2's coin
-
-    public Connect4Game(ImageIcon coinImage1, ImageIcon coinImage2, ImageIcon backgroundImage) {
-        this.coinImage1 = coinImage1;
-        this.coinImage2 = coinImage2;
-        this.backgroundImage = backgroundImage;
-
-        board = new int[ROWS][COLS];
-        currentPlayer = 1;
-
-        setTitle("Connect 4 Game");
-        setSize(BOARD_WIDTH, BOARD_HEIGHT);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-
-        BoardPanel boardPanel = new BoardPanel();
-        add(boardPanel);
-
-        boardPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int col = e.getX() / CELL_SIZE;
-                dropCoin(col);
-            }
-        });
+    public Connect4Game() {
+        frame = new JFrame("Connect 4 Game");
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setPreferredSize(frame.getSize());
+        frame.add(new MultiDraw(frame.getSize()));
+        frame.pack();
+        frame.setVisible(true);
     }
 
-    private void dropCoin(int col) {
-        for (int row = ROWS - 1; row >= 0; row--) {
-            if (board[row][col] == 0) {
-                board[row][col] = currentPlayer;
-                currentPlayer = currentPlayer == 1 ? 2 : 1;
-                repaint();
-                break;
-            }
-        }
+    public static void main(String... argv) {
+        new Connect4Game();
     }
 
-    private boolean checkWin(int player) {
-        // Check horizontal
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col <= COLS - 4; col++) {
-                if (board[row][col] == player && board[row][col + 1] == player &&
-                        board[row][col + 2] == player && board[row][col + 3] == player) {
-                    return true;
+    public static class MultiDraw extends JPanel implements MouseListener {
+        int startX = 10;
+        int startY = 10;
+        int cellSize = 60;
+        int turn = 2;
+        int rows = 6;
+        int cols = 7;
+        boolean winner = false;
+        boolean draw = false;
+        String ccolor = "";
+
+        Color[][] grid = new Color[rows][cols];
+
+        public MultiDraw(Dimension dimension) {
+            setSize(dimension);
+            setPreferredSize(dimension);
+            addMouseListener(this);
+            initializeGrid();
+        }
+
+        private void initializeGrid() {
+            int x = 0;
+            for (int row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[0].length; col++) {
+                    if (x % 2 == 0) {
+                        grid[row][col] = Color.white;
+                    } else {
+                        grid[row][col] = Color.white;
+                    }
+                    x++;
                 }
             }
         }
 
-        // Check vertical
-        for (int col = 0; col < COLS; col++) {
-            for (int row = 0; row <= ROWS - 4; row++) {
-                if (board[row][col] == player && board[row + 1][col] == player &&
-                        board[row + 2][col] == player && board[row + 3][col] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Check diagonal (top left to bottom right)
-        for (int row = 0; row <= ROWS - 4; row++) {
-            for (int col = 0; col <= COLS - 4; col++) {
-                if (board[row][col] == player && board[row + 1][col + 1] == player &&
-                        board[row + 2][col + 2] == player && board[row + 3][col + 3] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Check diagonal (top right to bottom left)
-        for (int row = 0; row <= ROWS - 4; row++) {
-            for (int col = 3; col < COLS; col++) {
-                if (board[row][col] == player && board[row + 1][col - 1] == player &&
-                        board[row + 2][col - 2] == player && board[row + 3][col - 3] == player) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean isBoardFull() {
-        for (int[] row : board) {
-            for (int cell : row) {
-                if (cell == 0) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private class BoardPanel extends JPanel {
         @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
+        public void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            Dimension d = getSize();
+            g2.setColor(new Color(0, 0, 255));
+            g2.fillRect(0, 0, d.width, d.height);
+            startX = 0;
+            startY = 0;
 
-            // Draw background grid
-            g.drawImage(backgroundImage.getImage(), 0, 0, BOARD_WIDTH, BOARD_HEIGHT, null);
+            
+            for (int row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[0].length; col++) {
+                    g2.setColor(grid[row][col]);
+                    g2.fillOval(startX, startY, cellSize, cellSize);
+                    g2.setColor(Color.black);
+                    g2.drawOval(startX, startY, cellSize, cellSize);
+                    startX += cellSize;
+                }
+                startY += cellSize;
+                startX = 0;
+            }
 
-            // Draw coins
-            for (int row = 0; row < ROWS; row++) {
-                for (int col = 0; col < COLS; col++) {
-                    if (board[row][col] == 1) {
-                        g.drawImage(coinImage1.getImage(), col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
-                    } else if (board[row][col] == 2) {
-                        g.drawImage(coinImage2.getImage(), col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+            g2.setColor(new Color(255, 255, 255));
+            if (winner) {
+                g2.drawString("WINNER - " + ccolor, 450, 20);
+                reset();
+            } else if (draw) {
+                g2.drawString("DRAW", 450, 20);
+                reset();
+            } else {
+                if (turn % 2 == 0)
+                    g2.drawString("Red's Turn", 450, 20);
+                else
+                    g2.drawString("Yellow's Turn", 450, 20);
+            }
+        }
+
+        public void mousePressed(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            if (!winner && !draw) {
+                if (x < (cellSize * grid[0].length) && y < (cellSize * grid.length)) {
+                    int clickedRow = y / cellSize;
+                    int clickedCol = x / cellSize;
+
+                    clickedRow = dropPiece(clickedCol);
+
+                    if (clickedRow != -1) {
+                        if (turn % 2 == 0) {
+                            grid[clickedRow][clickedCol] = Color.red;
+                            ccolor = "RED";
+                        } else {
+                            grid[clickedRow][clickedCol] = Color.yellow;
+                            ccolor = "Yellow";
+                        }
+                        turn++;
+                        if (checkForWinner(clickedCol, clickedRow, grid[clickedRow][clickedCol])) {
+                            winner = true;
+                        } else if (checkForDraw()) {
+                            draw = true;
+                        }
+                    }
+                }
+                repaint();
+            }
+        }
+
+        public int dropPiece(int col) {
+            int row = grid.length - 1;
+
+            while (row >= 0) {
+                if (grid[row][col].equals(Color.white)) {
+                    return row;
+                }
+                row--;
+            }
+
+            return -1;
+        }
+
+        public boolean checkForWinner(int col, int row, Color c) {
+            int count = 1;
+
+            // Check west and east
+            int xStart = col;
+            xStart--;
+            while (xStart >= 0) {
+                if (grid[row][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                xStart--;
+            }
+
+            xStart = col;
+            xStart++;
+            while (xStart < grid[0].length) {
+                if (grid[row][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                xStart++;
+            }
+
+            // Check north and south
+            count = 1;
+            int yStart = row;
+            yStart--;
+            while (yStart >= 0) {
+                if (grid[yStart][col].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart--;
+            }
+
+            yStart = row;
+            yStart++;
+            while (yStart < grid.length) {
+                if (grid[yStart][col].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart++;
+            }
+
+            // Check northwest and southeast
+            count = 1;
+            yStart = row;
+            xStart = col;
+            xStart--;
+            yStart--;
+            while (yStart >= 0 && xStart >= 0) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart--;
+                xStart--;
+            }
+
+            yStart = row;
+            yStart++;
+            xStart = col;
+            xStart++;
+            while (yStart < grid.length && xStart < grid.length) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart++;
+                xStart++;
+            }
+
+            // Check southwest and northeast
+            count = 1;
+            yStart = row;
+            xStart = col;
+            xStart--;
+            yStart++;
+            while (yStart < grid.length && xStart >= 0) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart++;
+                xStart--;
+            }
+
+            yStart = row;
+            yStart--;
+            xStart = col;
+            xStart++;
+            while (yStart >= 0 && xStart < grid[0].length) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart--;
+                xStart++;
+            }
+
+            return false;
+        }
+
+        public boolean checkForDraw() {
+            for (int row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[0].length; col++) {
+                    if (grid[row][col].equals(Color.white)) {
+                        return false;
                     }
                 }
             }
-
-            if (checkWin(1)) {
-                JOptionPane.showMessageDialog(this, "Player 1 wins!");
-                resetGame();
-            } else if (checkWin(2)) {
-                JOptionPane.showMessageDialog(this, "Player 2 wins!");
-                resetGame();
-            } else if (isBoardFull()) {
-                JOptionPane.showMessageDialog(this, "The game is a draw!");
-                resetGame();
-            }
+            return true;
         }
-    }
 
-    private void resetGame() {
-        board = new int[ROWS][COLS];
-        currentPlayer = 1;
-        repaint();
-    }
+        public void reset() {
+            initializeGrid();
+            turn = 2;
+            winner = false;
+            draw = false;
+        }
 
-    public static void main(String[] args) {
-        ImageIcon coinImage1 = new ImageIcon("red.png"); 
-        ImageIcon coinImage2 = new ImageIcon("yellow.png"); 
-        ImageIcon backgroundImage = new ImageIcon("Background.JPG");
-
-        SwingUtilities.invokeLater(() -> {
-            Connect4Game game = new Connect4Game(coinImage1, coinImage2, backgroundImage);
-            game.setVisible(true);
-        });
+        // Unused MouseListener methods
+        public void mouseClicked(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
     }
 }
