@@ -1,366 +1,323 @@
-
-
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Vector;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.WindowConstants;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 
-import java.awt.image.*;
-import java.awt.geom.AffineTransform;
+public class Driver {
+    private JFrame frame;
 
-public class Driver extends JPanel implements ActionListener, KeyListener {
+    public Driver() {
+        frame = new JFrame("Connect 4 Game");
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setPreferredSize(frame.getSize());
+        frame.add(new MultiDraw(frame.getSize()));
+        frame.pack();
+        frame.setVisible(true);
+    }
 
-	
-	String lost1 = "U LOSE";
-	String win1 = "U WON";
-	
-	int screen_width = 900;
-	int screen_height = 935;
-	
-	Music hop = new Music("src//hop//cat.mp3",false); 
+    public static void main(String... argv) {
+        new Driver();
+    }
 
-	// instantiate object log
-	int[][] yellow = new int[6][7];
+    public static class MultiDraw extends JPanel implements MouseListener {
+        int startX = 10;
+        int startY = 10;
+        int cellSize = 60;
+        int turn = 2;
+        int rows = 6;
+        int cols = 7;
+        boolean winner = false;
+        boolean draw = false;
+        String color = "";
 
-	
-	Background bg;
-	int my_variable = 3; // example
+        Color[][] grid = new Color[rows][cols];
+        private Clip backgroundMusic;
 
-	String lose = "";
-	String win = "";
-	String lost = "";
+        public MultiDraw(Dimension dimension) {
+            setSize(dimension);
+            setPreferredSize(dimension);
+            addMouseListener(this);
+            initializeGrid();
+            playBackgroundMusic();
+        }
 
-	// ****************************paint
-	// method******************************************
-	public void paint(Graphics g) {
+		private void initializeGrid() {
+            int x = 0;
+            for (int row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[0].length; col++) {
+                    if (x % 2 == 0) {
+                        grid[row][col] = Color.white;
+                    } else {
+                        grid[row][col] = Color.white;
+                    }
+                    x++;
+                }
+            }
+        }
 
-		super.paintComponent(g);
-		bg.paint(g);
+		private void playBackgroundMusic() {
+			try {
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("Cat2.au"));
+                backgroundMusic = AudioSystem.getClip();
+                backgroundMusic.open(audioInputStream);
+                backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace();
+            }
+			
+		}
+		
+		private void stopBackgroundMusic() {
+            if (backgroundMusic != null && backgroundMusic.isRunning()) {
+                backgroundMusic.stop();
+                backgroundMusic.close();
+            }
+        }
+		
+        @Override
+        public void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            Dimension d = getSize();
+            g2.setColor(new Color(0, 0, 255));
+            g2.fillRect(0, 0, d.width, d.height);
+            startX = 0;
+            startY = 0;
 
-		//g.setFont(font);
-		//g.setColor(Color.white);
-		//g.drawString(("Lives:") + Integer.toString(my_variable), 0, 80);
-	    //g.setFont(font2);
+            
+            for (int row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[0].length; col++) {
+                    g2.setColor(grid[row][col]);
+                    g2.fillOval(startX, startY, cellSize, cellSize);
+                    g2.setColor(Color.black);
+                    g2.drawOval(startX, startY, cellSize, cellSize);
+                    startX += cellSize;
+                }
+                startY += cellSize;
+                startX = 0;
+            }
 
-		// paint sprites for carss
-	/*	for (int i = 0; i < yellow1.length; i++) {
-			yellow1[i].paint(g);
-			
-			
-		
-		}
-		for (int i = 0; i < yellow2.length; i++) {
-			yellow2[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow3.length; i++) {
-			yellow3[i].paint(g);
-			
-		}
-		
-		
+            g2.setColor(new Color(255, 255, 255));
+            if (winner) {
+                g2.drawString("WINNER - " + color, 450, 20);
+                reset();
+            } else if (draw) {
+                g2.drawString("DRAW", 450, 20);
+                reset();
+            } else {
+                if (turn % 2 == 0)
+                    g2.drawString("Red's Turn", 450, 20);
+                else
+                    g2.drawString("Yellow's Turn", 450, 20);
+            }
+        }
 
-		for (int i = 0; i < yellow4.length; i++) {
-			yellow4[i].paint(g);
-			
-		}
-		
+        public void mousePressed(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            if (!winner && !draw) {
+                if (x < (cellSize * grid[0].length) && y < (cellSize * grid.length)) {
+                    int clickedRow = y / cellSize;
+                    int clickedCol = x / cellSize;
 
-		for (int i = 0; i < yellow5.length; i++) {
-			yellow5[i].paint(g);
-			
-		}
-		
+                    clickedRow = dropPiece(clickedCol);
 
-		for (int i = 0; i < yellow6.length; i++) {
-			yellow6[i].paint(g);
-			
-		}
-		
+                    if (clickedRow != -1) {
+                        if (turn % 2 == 0) {
+                            grid[clickedRow][clickedCol] = Color.red;
+                            color = "RED";
+                        } else {
+                            grid[clickedRow][clickedCol] = Color.yellow;
+                            color = "Yellow";
+                        }
+                        turn++;
+                        if (checkForWinner(clickedCol, clickedRow, grid[clickedRow][clickedCol])) {
+                            winner = true;
+                        } else if (checkForDraw()) {
+                            draw = true;
+                        }
+                    }
+                }
+                repaint();
+            }
+        }
 
-		for (int i = 0; i < yellow7.length; i++) {
-			yellow7[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow8.length; i++) {
-			yellow8[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow9.length; i++) {
-			yellow9[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow10.length; i++) {
-			yellow10[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow11.length; i++) {
-			yellow11[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow12.length; i++) {
-			yellow12[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow13.length; i++) {
-			yellow13[i].paint(g);
-			
-		}
-		for (int i = 0; i < yellow14.length; i++) {
-			yellow14[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow15.length; i++) {
-			yellow15[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow16.length; i++) {
-			yellow16[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow17.length; i++) {
-			yellow17[i].paint(g);
-			
-		}
-		
+        public int dropPiece(int col) {
+            int row = grid.length - 1;
 
-		for (int i = 0; i < yellow18.length; i++) {
-			yellow18[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow19.length; i++) {
-			yellow19[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < yellow20.length; i++) {
-			yellow20[i].paint(g);
-			
-		}
-		
+            while (row >= 0) {
+                if (grid[row][col].equals(Color.white)) {
+                    return row;
+                }
+                row--;
+            }
 
-		for (int i = 0; i < yellow21.length; i++) {
-			yellow21[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red1.length; i++) {
-			red1[i].paint(g);
-			
-			
-		
-		}
-		for (int i = 0; i < red2.length; i++) {
-			red2[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red3.length; i++) {
-			red3[i].paint(g);
-			
-		}
-		
-		
+            return -1;
+        }
 
-		for (int i = 0; i < red4.length; i++) {
-			red4[i].paint(g);
-			
-		}
-		
+        public boolean checkForWinner(int col, int row, Color c) {
+            int count = 1;
 
-		for (int i = 0; i < red5.length; i++) {
-			red5[i].paint(g);
-			
-		}
-		
+            // Check west and east
+            int xStart = col;
+            xStart--;
+            while (xStart >= 0) {
+                if (grid[row][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                xStart--;
+            }
 
-		for (int i = 0; i < red6.length; i++) {
-			red6[i].paint(g);
-			
-		}
-		
+            xStart = col;
+            xStart++;
+            while (xStart < grid[0].length) {
+                if (grid[row][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                xStart++;
+            }
 
-		for (int i = 0; i < red7.length; i++) {
-			red7[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red8.length; i++) {
-			red8[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red9.length; i++) {
-			red9[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red10.length; i++) {
-			red10[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red11.length; i++) {
-			red11[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red12.length; i++) {
-			red12[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red13.length; i++) {
-			red13[i].paint(g);
-			
-		}
-		for (int i = 0; i < red14.length; i++) {
-			red14[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red15.length; i++) {
-			red15[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red16.length; i++) {
-			red16[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red17.length; i++) {
-			red17[i].paint(g);
-			
-		}
-		
+            // Check north and south
+            count = 1;
+            int yStart = row;
+            yStart--;
+            while (yStart >= 0) {
+                if (grid[yStart][col].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart--;
+            }
 
-		for (int i = 0; i < red18.length; i++) {
-			red18[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red19.length; i++) {
-			red19[i].paint(g);
-			
-		}
-		
-		for (int i = 0; i < red20.length; i++) {
-			red20[i].paint(g);
-			
-		}
-		
+            yStart = row;
+            yStart++;
+            while (yStart < grid.length) {
+                if (grid[yStart][col].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart++;
+            }
 
-		for (int i = 0; i < red21.length; i++) {
-			red21[i].paint(g);
-			
-		}*/
-	}
+            // Check northwest and southeast
+            count = 1;
+            yStart = row;
+            xStart = col;
+            xStart--;
+            yStart--;
+            while (yStart >= 0 && xStart >= 0) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart--;
+                xStart--;
+            }
 
-	Font font = new Font("Courier New", 1, 50);
-	Font font2 = new Font("Courier New", 1, 30);
+            yStart = row;
+            yStart++;
+            xStart = col;
+            xStart++;
+            while (yStart < grid.length && xStart < grid.length) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart++;
+                xStart++;
+            }
 
-	//
-	public void update() {
+            // Check southwest and northeast
+            count = 1;
+            yStart = row;
+            xStart = col;
+            xStart--;
+            yStart++;
+            while (yStart < grid.length && xStart >= 0) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart++;
+                xStart--;
+            }
 
-		
-		
-		}
+            yStart = row;
+            yStart--;
+            xStart = col;
+            xStart++;
+            while (yStart >= 0 && xStart < grid[0].length) {
+                if (grid[yStart][xStart].equals(c)) {
+                    count++;
+                } else {
+                    break;
+                }
+                if (count == 4)
+                    return true;
+                yStart--;
+                xStart++;
+            }
 
-	
+            return false;
+        }
 
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		update();
-		repaint();
-	}
+        public boolean checkForDraw() {
+            for (int row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[0].length; col++) {
+                    if (grid[row][col].equals(Color.white)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
-	public static void main(String[] arg) {
-		Driver d = new Driver();
-	}
+        public void reset() {
+            initializeGrid();
+            turn = 2;
+            winner = false;
+            draw = false;
+        }
 
-	/* *
-	 * Used to setup all of the objects on the screen
-	 */
-	public Driver() {
-		JFrame f = new JFrame();
-		f.setTitle("Connect4");
-		f.setSize(screen_width, screen_height);
-		f.setResizable(false);
-		f.addKeyListener(this); 
-
-
-		for (int r = 0; r < yellow.length; r++) {	
-			for (int c = 0; c < yellow[0].length; c++) {
-				
-				
-			}
-			
-		}
-		
-		
-		
-		
-		// Add background
-		bg = new Background("Background.JPG");
-		
-		
-		
-
-		f.add(this);
-		t = new Timer(17, this);
-		t.start();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-	}
-
-	Timer t;
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		
-					
-		
-
-
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+        // Unused MouseListener methods
+        public void mouseClicked(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
+    }
 }
-
