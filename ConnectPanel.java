@@ -1,9 +1,9 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+package javaranch;
  
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,9 +17,6 @@ import java.awt.event.MouseEvent;
 import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-//Hi Mr.David, I just wanted to remind you that last week we talked about me take home quiz
-//and how I confused the wall with the wolverine start position. Just a reminder before you grade the quiz.
  
 /**
  *
@@ -32,6 +29,9 @@ public class ConnectPanel extends JFrame {
     public static final int EMPTY = 0;  
     public static final int PLAYER1 = 1;  
     public static final int PLAYER2 = 2;  
+    private JPanel messagePanel;
+    
+
    
     // Name-constants to represent the various states of the game  
     public static final int PLAYING = 0;  
@@ -45,13 +45,14 @@ public class ConnectPanel extends JFrame {
     public Scanner input = new Scanner(System.in); // the input Scanner
     MouseAdapter me;
     ArcsPanel[][] arcs;
-    
-  
-    
- 
    
    //------------------------------------------------------------
+    public static void main(String[] args) {  
+        // Initialize the game-board and current status 
+        new ConnectPanel();
+    } 
    
+   //------------------------------------------------------------
     public ConnectPanel(){  
        initGame();
        arcs = new ArcsPanel[Rows][Columns];
@@ -71,7 +72,7 @@ public class ConnectPanel extends JFrame {
           }
        };
        JPanel p1 = new JPanel();  
-       p1.setLayout(new arcsLayout(Rows, Columns)); 
+       p1.setLayout(new GridLayout(Rows, Columns)); 
    
        for (int i=0; i<Rows; i++) { 
            for (int j = 0; j < Columns; j++) {
@@ -100,53 +101,134 @@ public class ConnectPanel extends JFrame {
     }  
      
    //------------------------------------------------------------
+    
+    
+    
     private void checkForResult(int row, int col) {
-    	//check for 4 across
-    			for(int row = 0; row<arcs.length; row++){
-    				for (int col = 0;col < arcs[0].length - 3;col++){
-    					if (arcs[row][col] == currentPlayer   && 
-    						arcs[row][col+1] == currentPlayer &&
-    						arcs[row][col+2] == currentPlayer &&
-    						arcs[row][col+3] == currentPlayer){
-    						return;
-    					}
-    				}			
-    			}
-    			//check for 4 up and down
-    			for(int row = 0; row < arcs.length - 3; row++){
-    				for(int col1 = 0; col1 < arcs[0].length; col1++){
-    					if (arcs[row][col1] == currentPlayer   && 
-    						arcs[row+1][col1] == currentPlayer &&
-    						arcs[row+2][col1] == currentPlayer &&
-    						arcs[row+3][col1] == currentPlayer){
-    						return true;
-    					}
-    				}
-    			}
-    			//check upward diagonal
-    			for(int row = 3; row < arcs.length; row++){
-    				for(int col = 0; col < arcs[0].length - 3; col++){
-    					if (arcs[row][col] == currentPlayer   && 
-    						arcs[row-1][col+1] == currentPlayer &&
-    						arcs[row-2][col+2] == currentPlayer &&
-    						arcs[row-3][col+3] == currentPlayer){
-    						return true;
-    					}
-    				}
-    			}
-    			//check downward diagonal
-    			for(int row = 0; row < arcs.length - 3; row++){
-    				for(int col = 0; col < arcs[0].length - 3; col++){
-    					if (arcs[row][col] == currentPlayer   && 
-    						arcs[row+1][col+1] == currentPlayer &&
-    						arcs[row+2][col+2] == currentPlayer &&
-    						grid[row+3][col+3] == currentPlayer){
-    						return true;
-    					}
-    				}
-    			}
-    			return false;
+        // Check for horizontal win
+        int count = 1; // Counter for consecutive discs of the same color
+        int r = row;
+        int c = col;
+
+        // Check to the left
+        while (c > 0 && board[r][c - 1] == board[row][col]) {
+            count++;
+            c--;
+        }
+
+        // Check to the right
+        c = col;
+        while (c < Columns - 1 && board[r][c + 1] == board[row][col]) {
+            count++;
+            c++;
+        }
+
+        if (count >= AmountToWin) {
+            // Horizontal win
+            System.out.println("Player " + currentPlayer + " wins horizontally!");
+            currentState = PLAYING;
+            return;
+        }
+
+        // Check for vertical win
+        count = 1;
+        r = row;
+        c = col;
+
+        // Check below
+        while (r < Rows - 1 && board[r + 1][c] == board[row][col]) {
+            count++;
+            r++;
+        }
+
+        if (count >= AmountToWin) {
+            // Vertical win
+            System.out.println("Player " + currentPlayer + " wins vertically!");
+            currentState = PLAYING;
+            return;
+        }
+
+        // Check for diagonal win (top-left to bottom-right)
+        count = 1;
+        r = row;
+        c = col;
+
+        // Check top-left
+        while (r > 0 && c > 0 && board[r - 1][c - 1] == board[row][col]) {
+            count++;
+            r--;
+            c--;
+        }
+
+        // Check bottom-right
+        r = row;
+        c = col;
+        while (r < Rows - 1 && c < Columns - 1 && board[r + 1][c + 1] == board[row][col]) {
+            count++;
+            r++;
+            c++;
+        }
+
+        if (count >= AmountToWin) {
+            // Diagonal win (top-left to bottom-right)
+            System.out.println("Player " + currentPlayer + " wins diagonally (top-left to bottom-right)!");
+            currentState = PLAYING;
+            return;
+        }
+
+        // Check for diagonal win (top-right to bottom-left)
+        count = 1;
+        r = row;
+        c = col;
+
+        // Check top-right
+        while (r > 0 && c < Columns - 1 && board[r - 1][c + 1] == board[row][col]) {
+            count++;
+            r--;
+            c++;
+        }
+
+        // Check bottom-left
+        r = row;
+        c = col;
+        while (r < Rows - 1 && c > 0 && board[r + 1][c - 1] == board[row][col]) {
+            count++;
+            r++;
+            c--;
+        }
+
+        if (count >= AmountToWin) {
+            // Diagonal win (top-right to bottom-left)
+            System.out.println("Player " + currentPlayer + " wins diagonally (top-right to bottom-left)!");
+            currentState = PLAYING;
+            return;
+        }
+
+        // Check for a draw
+        boolean isDraw = true;
+        for (int i = 0; i < Rows; i++) {
+            for (int j = 0; j < Columns; j++) {
+                if (board[i][j] == EMPTY) {
+                    isDraw = false;
+                    break;
+                }
+            }
+            if (!isDraw) {
+                break;
+            }
+        }
+
+        if (isDraw) {
+            // Draw
+            System.out.println("It's a draw!");
+            currentState = PLAYING;
+            return;
+        }
+
+        // Continue the game
+        currentState = PLAYING;
     }
+
      
    //------------------------------------------------------------
    /**finds the first empty space in a column starting at the bottom.*/ 
