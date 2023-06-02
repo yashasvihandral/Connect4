@@ -1,4 +1,5 @@
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Dimension;
@@ -14,10 +15,14 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 public class Driver {
     private JFrame frame;
 
+//set background
     public Driver() {
         frame = new JFrame("Connect 4 Game");
         frame.setSize(600, 400);
@@ -26,6 +31,7 @@ public class Driver {
         frame.add(new MultiDraw(frame.getSize()));
         frame.pack();
         frame.setVisible(true);
+ 
     }
 
     public static void main(String... argv) {
@@ -52,6 +58,8 @@ public class Driver {
             addMouseListener(this);
             initializeGrid();
             playBackgroundMusic();
+            
+            
         }
 
 		private void initializeGrid() {
@@ -67,6 +75,7 @@ public class Driver {
                 }
             }
         }
+//added file Cat2.au to game, made the music look and utilized the AudioInputStream
 
 		private void playBackgroundMusic() {
 			try {
@@ -79,13 +88,14 @@ public class Driver {
             }
 			
 		}
-		
+
 		private void stopBackgroundMusic() {
             if (backgroundMusic != null && backgroundMusic.isRunning()) {
                 backgroundMusic.stop();
                 backgroundMusic.close();
             }
         }
+// painted the grid, coins using a forloop and setColor, also have an if statement to display WInner or draw depending or if the game isn’t done yet, then displays the player and name of next player 
 		
         @Override
         public void paintComponent(Graphics g) {
@@ -122,7 +132,11 @@ public class Driver {
                 else
                     g2.drawString("Yellow's Turn", 450, 20);
             }
+ 
+            
         }
+
+//lets the coin drop a the desired location depending on where the mouse is pressed
 
         public void mousePressed(MouseEvent e) {
             int x = e.getX();
@@ -152,8 +166,11 @@ public class Driver {
                 }
                 repaint();
             }
+            
+
         }
 
+//the droppiece method drops the piece in the designated row that was provided by the mouse of player
         public int dropPiece(int col) {
             int row = grid.length - 1;
 
@@ -166,6 +183,8 @@ public class Driver {
 
             return -1;
         }
+
+//checkForWinner method allows every combination of 4 coins to declare a winner
 
         public boolean checkForWinner(int col, int row, Color c) {
             int count = 1;
@@ -197,7 +216,7 @@ public class Driver {
                 xStart++;
             }
 
-            // Check north and south
+            // Checks north and south connect 4 coins in a row by utilizing if statement
             count = 1;
             int yStart = row;
             yStart--;
@@ -225,7 +244,7 @@ public class Driver {
                 yStart++;
             }
 
-            // Check northwest and southeast
+            // Check northwest and southeast if there is 4 coins in a row, and then finished
             count = 1;
             yStart = row;
             xStart = col;
@@ -259,7 +278,7 @@ public class Driver {
                 xStart++;
             }
 
-            // Check southwest and northeast
+            // Check southwest and northeast if there are 4 coins in a row 
             count = 1;
             yStart = row;
             xStart = col;
@@ -295,7 +314,7 @@ public class Driver {
 
             return false;
         }
-
+//the checkforDraw method parses through each row and column of the grid to check if there is no empty spot and if there is then declares a draw. 
         public boolean checkForDraw() {
             for (int row = 0; row < grid.length; row++) {
                 for (int col = 0; col < grid[0].length; col++) {
@@ -314,10 +333,31 @@ public class Driver {
             draw = false;
         }
 
-        // Unused MouseListener methods
+
         public void mouseClicked(MouseEvent e) {}
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
     }
+//allowed the coins to be placed in the correct location utilizing a stack
+   
+
+// initialized a Stack to hold the placements of the coins on the grid  
+    public static class CoinPlacementStuff {
+    	private String playerName;
+        private Stack<Point> coinPlacements;
+
+        public void CoinPlacement(String playerName) {
+            this.playerName = playerName;
+            coinPlacements = new Stack<>();
+     
+            
+        }
+        public void addCoinPlacement(Point placement) {
+            coinPlacements.push(placement);
+        }
+
+    }
 }
+
+
